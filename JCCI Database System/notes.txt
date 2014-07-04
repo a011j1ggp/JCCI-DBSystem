@@ -1,0 +1,26 @@
+date_sourced (*)
+date_processed (*)
+first_name (*)
+last_name (*)
+primary_mobile (*)
+secondary_mobile (*)
+email (*)
+school (*)
+last_position (*)
+job_classification (agent, non-agent, or not classified) (*)
+last_company (*)
+source (*)
+source_specifics (*)
+position_endorsed (*)
+status (*)
+sched_date
+sched_time
+sched_outcome
+resched_date
+resched_time
+resched_outcome
+recruiter (*)
+endorsed_client
+client_result
+remarks
+actual_revenue
