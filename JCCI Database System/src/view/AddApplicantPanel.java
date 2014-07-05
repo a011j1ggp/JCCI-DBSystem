@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Rectangle;
@@ -9,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -25,23 +26,24 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
-import javax.swing.border.LineBorder;
-
-import model.Date;
+import model.AccessLayer;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import com.toedter.calendar.JDateChooser;
 
 public class AddApplicantPanel extends JPanel{
 	
-	public String values[] = new String[] {"", "Web Developer", "Data Processing Assistant", "Technical Writers", "Technical Editors", "Publication Planners", "Desktop Publishers", "Localization Administrator", "Usability Specialist", "Cloud Support Engineer", "DevOps Engineer", "Global Support Services Engineer", "Software Level 3 Support", "Mobile Software Engineer", "Mechanical Design Engineer", "Software Engineer (Tools Developer)", "Software Engineer (Java)", "Firmware Development Engineer", "Software Solutions Engineer (C/C++)", "Software Quality Assurance Engineer", "Firmware Test Engineer", "IT Project Manager", "HRIS Analyst", "Finance and Accounting Manager", "Analyst Accountants", "Junior Accountants", "Senior Accountants", "Interface Accounting Process Experts", "Accounts Receivable Specialists", "Finance Sales Analysts", "Quality Management Specialists", "Accounting Officer", "Rebates Team Lead", "Senior Buyer", "Senior Order to Cash Manager", "Auditor", "Customer Service Representative", "Technical Support Representative (Cable TV/Internet)", "Pre-process Trainer", "Voice Interaction Coach", "Transitions Manager", "Training Manager", "Communications Trainor", "Spanish Sales Representative", "Human Resources Director", "Human Resources Manager", "Human Resources Officer", "Human Resources Consultants", "Sourcing Associates", "Safety and Security Manager", "Manufacturing Section Manager", "Process Engineer", "Technical Services Auditor", "Service Engineer", "Area Business Manager", "Marketing Manager", "Assistant Marketing Manager", "Business Proposal Coordinator", "Junior Sales Associate", "Assistant Product Manager", "Freight Sales Head", "AVP for Sales and Marketing", "Merchandising Head", "Merchandising Development", "Executive Assistants"},
+	/*public String values[] = new String[] {"", "Web Developer", "Data Processing Assistant", "Technical Writers", "Technical Editors", "Publication Planners", "Desktop Publishers", "Localization Administrator", "Usability Specialist", "Cloud Support Engineer", "DevOps Engineer", "Global Support Services Engineer", "Software Level 3 Support", "Mobile Software Engineer", "Mechanical Design Engineer", "Software Engineer (Tools Developer)", "Software Engineer (Java)", "Firmware Development Engineer", "Software Solutions Engineer (C/C++)", "Software Quality Assurance Engineer", "Firmware Test Engineer", "IT Project Manager", "HRIS Analyst", "Finance and Accounting Manager", "Analyst Accountants", "Junior Accountants", "Senior Accountants", "Interface Accounting Process Experts", "Accounts Receivable Specialists", "Finance Sales Analysts", "Quality Management Specialists", "Accounting Officer", "Rebates Team Lead", "Senior Buyer", "Senior Order to Cash Manager", "Auditor", "Customer Service Representative", "Technical Support Representative (Cable TV/Internet)", "Pre-process Trainer", "Voice Interaction Coach", "Transitions Manager", "Training Manager", "Communications Trainor", "Spanish Sales Representative", "Human Resources Director", "Human Resources Manager", "Human Resources Officer", "Human Resources Consultants", "Sourcing Associates", "Safety and Security Manager", "Manufacturing Section Manager", "Process Engineer", "Technical Services Auditor", "Service Engineer", "Area Business Manager", "Marketing Manager", "Assistant Marketing Manager", "Business Proposal Coordinator", "Junior Sales Associate", "Assistant Product Manager", "Freight Sales Head", "AVP for Sales and Marketing", "Merchandising Head", "Merchandising Development", "Executive Assistants"},
 				classification[] = new String[] {"Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified",
 					"Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Agent","Agent","Non-Agent","Non-Agent","Non-Agent","Non-Agent","Non-Agent","Agent","Unclassified",
-					"Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified"};
-	public JTextField firstName_TF, lastName_TF, primaryNum_TF, secNum_TF, school_TF, lastComp_TF, email_TF, source_TF, specifics_TF,
-						schedTime_TF, reschedTime_TF, recruiter_TF, clientName_TF, actualRevenue_TF, cvPath_TF;
-	public Date dateSourcedCB, dateProcessedCB, schedDateCB, reschedDateCB  ;
+					"Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified","Unclassified"};*/
+	public JTextField primaryNum_TF, secNum_TF, school_TF, lastComp_TF, source_TF, specifics_TF, recruiter_TF, clientName_TF, actualRevenue_TF, cvPath_TF;
+	public TextField firstName_TF, lastName_TF, schedTime_TF, reschedTime_TF, email_TF;
 	public JButton saveButton, backButton;
 	public JTextArea remarks_TA;
 	public Path source, target;
 	public ArrayList<String> strValues= new ArrayList<String>();
+	public JDateChooser dateSourcedDC, dateProcessedDC, schedDateDC, reschedDateDC ;
 	
 	public int from=1;
 	
@@ -53,13 +55,13 @@ public class AddApplicantPanel extends JPanel{
 	public DefaultComboBoxModel lastPosModel, posEndorsedModel;
 	
 	private static AddApplicantPanel instance;
-	private JLabel sourcedLbl, processedLbl, firstNameLbl, lastNameLbl, schoolLbl, lastPosLbl, emailLbl, sourceLbl, specificsLbl, posEndorsedLbl, statusLbl,
+	private JLabel sourcedLbl, processedLbl, fullNameLbl, schoolLbl, lastPosLbl, emailLbl, sourceLbl, specificsLbl, posEndorsedLbl, statusLbl,
 			schedTimeLbl, schedOutcomeLbl;
 	
 	@SuppressWarnings("rawtypes")
 	public JComboBox statusCB, schedOutcomeCB, jobClassCB, reschedOutcomeCB, clientResultCB, lastPosCB, posEndorsedCB ;
 	@SuppressWarnings("rawtypes")
-	public Vector comboBoxItems = new Vector();
+	public Vector lastPoscomboBoxItems = new Vector(), posEndorsedcomboBoxItems = new Vector();
 	
 	JFileChooser chooser = new JFileChooser();
 	private JButton removeButton;
@@ -72,6 +74,14 @@ public class AddApplicantPanel extends JPanel{
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public AddApplicantPanel() {
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				setFocusable(true);
+				setRequestFocusEnabled(true);
+				grabFocus();
+			}
+		});
 		setBounds(new Rectangle(0, 0, 900, 700));
 		setLayout(null);
 		
@@ -82,83 +92,74 @@ public class AddApplicantPanel extends JPanel{
 		chooser.addChoosableFileFilter(new ExtensionFileFilter(null, null));
 		chooser.setAcceptAllFileFilterUsed(false); // Turn off 'All Files' capability of file chooser, so only our custom filter is used.
 		
-		for(int i=0; i<values.length; i++)
+		ResultSet rs = AccessLayer.getInstance().getAllOccupations();
+		try {
+			while(rs.next()){
+				lastPoscomboBoxItems.add(rs.getString(1));
+				posEndorsedcomboBoxItems.add(rs.getString(1));
+				strValues.add(rs.getString(2));
+			}
+		} catch (SQLException e2) {
+			e2.printStackTrace();
+		}
+	/*	for(int i=0; i<values.length; i++){
 			comboBoxItems.add(values[i]);
-		lastPosModel = new DefaultComboBoxModel(comboBoxItems);
-		posEndorsedModel = new DefaultComboBoxModel(comboBoxItems);
+			/*try {
+				AccessLayer.getInstance().addOccupationToDatabase(insertBackSlash(values[i]), insertBackSlash(classification[i]));
+			} catch (SQLException e1) {
+			}
+		}*/
+		lastPosModel = new DefaultComboBoxModel(lastPoscomboBoxItems);
+		posEndorsedModel = new DefaultComboBoxModel(posEndorsedcomboBoxItems);
 		
 		sourcedLbl = new JLabel("Date Sourced");
 		sourcedLbl.setBounds(10, 11, 70, 14);
 		add(sourcedLbl);
 		
-		dateSourcedCB = new Date();
-		dateSourcedCB.setBounds(10, 28, 186, 30);
-		dateSourcedCB.day.setBounds(51, 5, 40, 20);
-		dateSourcedCB.month.setBounds(0, 5, 41, 20);
-		dateSourcedCB.year.setBorder(new LineBorder(Color.WHITE));
-		dateSourcedCB.year.setBounds(101, 5, 70, 20);
-		add(dateSourcedCB);
-		
 		processedLbl = new JLabel("Date Processed");
 		processedLbl.setBounds(10, 69, 90, 14);
 		add(processedLbl);
 		
-		dateProcessedCB = new Date();
-		dateProcessedCB.setBounds(10, 87, 186, 30);
-		dateProcessedCB.day.setBounds(51, 5, 40, 20);
-		dateProcessedCB.month.setBounds(0, 5, 41, 20);
-		dateProcessedCB.year.setBorder(new LineBorder(Color.WHITE));
-		dateProcessedCB.year.setBounds(101, 5, 70, 20);
-		add(dateProcessedCB);
+		fullNameLbl = new JLabel("Full Name");
+		fullNameLbl.setBounds(224, 16, 70, 14);
+		add(fullNameLbl);
 		
-		firstName_TF = new JTextField();
-		firstName_TF.setMinimumSize(new Dimension(20, 20));
-		firstName_TF.setColumns(10);
-		firstName_TF.setBounds(279, 11, 166, 24);
+		firstName_TF = new TextField("First Name");
+		firstName_TF.setBounds(279, 8, 166, 24);
 		add(firstName_TF);
 		
-		firstNameLbl = new JLabel("First Name");
-		firstNameLbl.setBounds(224, 16, 70, 14);
-		add(firstNameLbl);
-		
-		lastName_TF = new JTextField();
-		lastName_TF.setMinimumSize(new Dimension(20, 20));
-		lastName_TF.setColumns(10);
-		lastName_TF.setBounds(510, 11, 166, 24);
+		lastName_TF = new TextField("Last Name");
+		lastName_TF.setBounds(279, 41, 166, 24);
 		add(lastName_TF);
-		
-		lastNameLbl = new JLabel("Last Name");
-		lastNameLbl.setBounds(451, 16, 70, 14);
-		add(lastNameLbl);
 		
 		primaryNum_TF = new JTextField();
 		primaryNum_TF.setMinimumSize(new Dimension(20, 20));
 		primaryNum_TF.setColumns(10);
-		primaryNum_TF.setBounds(736, 11, 154, 24);
+		primaryNum_TF.setBounds(566, 11, 154, 24);
 		add(primaryNum_TF);
 		
 		JLabel primNumLbl = new JLabel("Prim. #");
-		primNumLbl.setBounds(693, 16, 41, 14);
+		primNumLbl.setBounds(518, 11, 41, 14);
 		add(primNumLbl);
 		
 		secNum_TF = new JTextField();
 		secNum_TF.setMinimumSize(new Dimension(20, 20));
 		secNum_TF.setColumns(10);
-		secNum_TF.setBounds(262, 46, 154, 24);
+		secNum_TF.setBounds(262, 69, 154, 24);
 		add(secNum_TF);
 		
 		JLabel secNumLbl = new JLabel("Sec. #");
-		secNumLbl.setBounds(224, 51, 41, 14);
+		secNumLbl.setBounds(224, 69, 41, 14);
 		add(secNumLbl);
 		
 		school_TF = new JTextField();
 		school_TF.setMinimumSize(new Dimension(20, 20));
 		school_TF.setColumns(10);
-		school_TF.setBounds(461, 46, 195, 24);
+		school_TF.setBounds(480, 46, 195, 24);
 		add(school_TF);
 		
 		schoolLbl = new JLabel("School");
-		schoolLbl.setBounds(426, 51, 41, 14);
+		schoolLbl.setBounds(480, 28, 41, 14);
 		add(schoolLbl);
 		
 		JLabel jobClassLbl = new JLabel("Job Classification");
@@ -171,7 +172,7 @@ public class AddApplicantPanel extends JPanel{
 		add(jobClassCB);
 		
 		lastPosLbl = new JLabel("C/L Pos");
-		lastPosLbl.setBounds(665, 51, 41, 14);
+		lastPosLbl.setBounds(728, 28, 41, 14);
 		add(lastPosLbl);
 		
 		lastPosCB = new JComboBox(lastPosModel);
@@ -195,22 +196,20 @@ public class AddApplicantPanel extends JPanel{
 		lastComp_TF = new JTextField();
 		lastComp_TF.setMinimumSize(new Dimension(20, 20));
 		lastComp_TF.setColumns(10);
-		lastComp_TF.setBounds(294, 93, 187, 24);
+		lastComp_TF.setBounds(294, 98, 187, 24);
 		add(lastComp_TF);
 		
 		JLabel lastCompLbl = new JLabel("C/L Company");
 		lastCompLbl.setBounds(220, 98, 64, 14);
 		add(lastCompLbl);
 		
-		email_TF = new JTextField();
-		email_TF.setMinimumSize(new Dimension(20, 20));
-		email_TF.setColumns(10);
-		email_TF.setBounds(518, 93, 166, 24);
-		add(email_TF);
-		
 		emailLbl = new JLabel("Email");
 		emailLbl.setBounds(491, 98, 41, 14);
 		add(emailLbl);
+		
+		email_TF = new TextField("sample@yahoo.com");
+		email_TF.setBounds(519, 87, 166, 30);
+		add(email_TF);
 		
 		source_TF = new JTextField();
 		source_TF.setMinimumSize(new Dimension(20, 20));
@@ -249,28 +248,17 @@ public class AddApplicantPanel extends JPanel{
 		statusCB.setBounds(746, 128, 144, 24);
 		add(statusCB);
 		
-		schedDateCB = new Date();
-		schedDateCB.year.setBorder(new LineBorder(Color.WHITE));
-		schedDateCB.setBounds(10, 185, 186, 30);
-		schedDateCB.day.setBounds(51, 5, 40, 20);
-		schedDateCB.month.setBounds(0, 5, 41, 20);
-		schedDateCB.year.setBorder(new LineBorder(Color.WHITE));
-		schedDateCB.year.setBounds(101, 5, 70, 20);
-		add(schedDateCB);
-		
 		JLabel schedDateLbl = new JLabel("Sched. Date");
 		schedDateLbl.setBounds(10, 168, 70, 14);
 		add(schedDateLbl);
 		
-		schedTime_TF = new JTextField();
-		schedTime_TF.setMinimumSize(new Dimension(20, 20));
-		schedTime_TF.setColumns(10);
-		schedTime_TF.setBounds(291, 163, 70, 24);
-		add(schedTime_TF);
-		
 		schedTimeLbl = new JLabel("Sched. Time");
 		schedTimeLbl.setBounds(224, 168, 82, 14);
 		add(schedTimeLbl);
+		
+		schedTime_TF = new TextField("eg. 8:30 am");
+		schedTime_TF.setBounds(291, 163, 70, 24);
+		add(schedTime_TF);
 		
 		schedOutcomeCB = new JComboBox();
 		schedOutcomeCB.setModel(new DefaultComboBoxModel(new String[] {"", "No show - No answer", "No show - Call declined", "No show - Can't contact", "Endorsed", "Rescheduled", "Failed IDI", "Failed EP Interview", "Withdrew Application", "Failed VERSANT", "Declined Offer", "Active File"}));
@@ -285,23 +273,12 @@ public class AddApplicantPanel extends JPanel{
 		reschedDateLbl.setBounds(10, 227, 70, 14);
 		add(reschedDateLbl);
 		
-		reschedDateCB = new Date();
-		reschedDateCB.year.setBorder(new LineBorder(Color.WHITE));
-		reschedDateCB.setBounds(10, 244, 186, 30);
-		reschedDateCB.day.setBounds(51, 5, 40, 20);
-		reschedDateCB.month.setBounds(0, 5, 41, 20);
-		reschedDateCB.year.setBorder(new LineBorder(Color.WHITE));
-		reschedDateCB.year.setBounds(101, 5, 70, 20);
-		add(reschedDateCB);
-		
 		JLabel reschedTimeLbl = new JLabel("Resched. Time");
 		reschedTimeLbl.setBounds(609, 168, 82, 14);
 		add(reschedTimeLbl);
 		
-		reschedTime_TF = new JTextField();
-		reschedTime_TF.setMinimumSize(new Dimension(20, 20));
-		reschedTime_TF.setColumns(10);
-		reschedTime_TF.setBounds(686, 163, 70, 24);
+		reschedTime_TF = new TextField("eg. 8:30 am");
+		reschedTime_TF.setBounds(686, 165, 70, 24);
 		add(reschedTime_TF);
 		
 		JLabel reschedOutcomeLbl = new JLabel("Resched. Outcome");
@@ -402,10 +379,8 @@ public class AddApplicantPanel extends JPanel{
 		scrollPane.setBounds(10, 536, 205, 78);
 		add(scrollPane);
 		listModel = new DefaultListModel();
-		for(int i =0; i<values.length; i++){
-			listModel.addElement(values[i]);
-			strValues.add(classification[i]);
-		}
+		for(int i =0; i<lastPoscomboBoxItems.size(); i++)
+			listModel.addElement(lastPoscomboBoxItems.elementAt(i));
 		occupationList = new JList(listModel);
 		scrollPane.setViewportView(occupationList);
 		
@@ -413,33 +388,40 @@ public class AddApplicantPanel extends JPanel{
 		addWorkButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JTextField field1 = new JTextField();  
-				JTextField field2 = new JTextField();
+				JComboBox field2 = new JComboBox(new String[]{"Agent", "Non-Agent", "Unclassified"});
 				
-				Object[] message = { "Occupation Name:", field1,  "Job Classification:", field2, };
+				Object[] message = { "Occupation Name:", field1,  "Job Classification:", field2};
 				int option = JOptionPane.showConfirmDialog(null, message, "Enter all your values", JOptionPane.OK_CANCEL_OPTION);  
 				if (option == JOptionPane.OK_OPTION){
 					String input1 = field1.getText();  
-				    String input2 = field2.getText();
+				    String input2 = field2.getSelectedItem().toString();
 				    
 					boolean no=true;
 					if(input1==null || input2==null)
 						return;
 					
-					if(!input1.trim().isEmpty() && !input2.trim().isEmpty()){
+					if(!input1.trim().isEmpty()){
 						for(int i=0; i<listModel.size(); i++){
 							if(input1.equalsIgnoreCase(""+listModel.getElementAt(i)))
 								no=false;
 						}
 						if(no==true){
-							listModel.addElement(input1.trim());
-							strValues.add(input2.trim());
-							lastPosModel.addElement(input1.trim());
-							posEndorsedModel.addElement(input1.trim());
+							try {
+								AccessLayer.getInstance().addOccupationToDatabase(input1.trim(), input2.trim());
+								listModel.addElement(input1.trim());
+								strValues.add(input2.trim());
+								lastPosCB.addItem(input1.trim());
+								posEndorsedCB.addItem(input1.trim());
+								System.out.println(lastPosCB.getItemAt(lastPosCB.getItemCount()-1));
+								System.out.println(lastPosCB.getItemAt(lastPosCB.getItemCount()-2));
+								System.out.println(lastPosCB.getItemCount());
+						//		((DefaultListCellRenderer)(lastPosCB.getRenderer())).repaint();
+						//		((DefaultListCellRenderer)(lastPosCB.getRenderer())).validate();
+							} catch (SQLException e1) {	}
 						}
 						else
 							JOptionPane.showMessageDialog(null, "Information already exist!", "Error", JOptionPane.ERROR_MESSAGE);
 					}
-					
 					else
 						JOptionPane.showMessageDialog(null, "Fill up all information!", "Error", JOptionPane.ERROR_MESSAGE);
 				}
@@ -452,6 +434,7 @@ public class AddApplicantPanel extends JPanel{
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i=0, indeces[] = occupationList.getSelectedIndices(); i<indeces.length; i++){
+					AccessLayer.getInstance().removeOccupationFromDatabase(insertBackSlash(listModel.getElementAt(indeces[i]-i).toString()));
 					listModel.removeElementAt(indeces[i]-i);
 					lastPosModel.removeElementAt(indeces[i]-i);
 					posEndorsedModel.removeElementAt(indeces[i]-i);
@@ -460,11 +443,31 @@ public class AddApplicantPanel extends JPanel{
 		});
 		removeButton.setBounds(32, 651, 166, 24);
 		add(removeButton);
+		
+		dateSourcedDC = new JDateChooser();
+		dateSourcedDC.setDateFormatString("MMM d, yyyy");
+		dateSourcedDC.setBounds(10, 94, 186, 20);
+		add(dateSourcedDC);
+		
+		dateProcessedDC = new JDateChooser();
+		dateProcessedDC.setDateFormatString("MMM d, yyyy");
+		dateProcessedDC.setBounds(10, 36, 186, 20);
+		add(dateProcessedDC);
+		
+		schedDateDC = new JDateChooser();
+		schedDateDC.setDateFormatString("MMM d, yyyy");
+		schedDateDC.setBounds(10, 196, 186, 20);
+		add(schedDateDC);
+		
+		reschedDateDC = new JDateChooser();
+		reschedDateDC.setDateFormatString("MMM d, yyyy");
+		reschedDateDC.setBounds(10, 248, 186, 20);
+		add(reschedDateDC);
 	}
 	
 	public void clearFields(){
-		dateProcessedCB.reset();
-		dateSourcedCB.reset();
+		dateProcessedDC.setDate(null);
+		dateSourcedDC.setDate(null);
 		firstName_TF.setText("");
 		lastName_TF.setText("");
 		primaryNum_TF.setText("");
@@ -478,10 +481,10 @@ public class AddApplicantPanel extends JPanel{
 		specifics_TF.setText("");
 		posEndorsedCB.setSelectedIndex(0);
 		statusCB.setSelectedIndex(0);
-		schedDateCB.reset();
+		schedDateDC.setDate(null);
 		schedTime_TF.setText("");
 		schedOutcomeCB.setSelectedIndex(0);
-		reschedDateCB.reset();
+		reschedDateDC.setDate(null);
 		reschedTime_TF.setText("");
 		reschedOutcomeCB.setSelectedIndex(0);
 		recruiter_TF.setText("");
@@ -563,5 +566,15 @@ public class AddApplicantPanel extends JPanel{
 	
 	public void showPanel(int from) {
 		setVisible(true);
+	}
+	
+	public String insertBackSlash(String str) {
+		String res = "";
+		for(int i = 0; i < str.length();i++)
+			if(str.charAt(i)=='\'' || str.charAt(i) == '\\')
+				res+="\\"+str.charAt(i);
+			else
+				res+=str.charAt(i);
+		return res;
 	}
 }

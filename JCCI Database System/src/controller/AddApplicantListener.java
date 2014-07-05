@@ -2,6 +2,7 @@ package controller;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.file.Files;
@@ -9,11 +10,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import model.AccessLayer;
 import model.Applicant;
-
 import view.AddApplicantPanel;
+
+import com.toedter.calendar.JDateChooser;
 
 public class AddApplicantListener implements ActionListener{ 
 
@@ -30,24 +33,33 @@ public class AddApplicantListener implements ActionListener{
 		
 		if(event.getSource() == controller.addApplicantView.saveButton) {
 			try{
-				Applicant applicant = new Applicant(AddApplicantPanel.getInstance().dateSourcedCB.getDate(), AddApplicantPanel.getInstance().dateProcessedCB.getDate(),
+				JDateChooser dateS = AddApplicantPanel.getInstance().dateSourcedDC,
+						dateP = AddApplicantPanel.getInstance().dateProcessedDC,
+						dateRD = AddApplicantPanel.getInstance().reschedDateDC,
+						dateD = AddApplicantPanel.getInstance().schedDateDC;
+				Applicant applicant = new Applicant(dateS.getDate(), dateP.getDate(),
 							AddApplicantPanel.getInstance().firstName_TF.getText().trim(), AddApplicantPanel.getInstance().lastName_TF.getText().trim(),
 							AddApplicantPanel.getInstance().primaryNum_TF.getText().trim(), AddApplicantPanel.getInstance().secNum_TF.getText().trim(),
 							AddApplicantPanel.getInstance().school_TF.getText().trim(), AddApplicantPanel.getInstance().lastPosCB.getSelectedItem().toString(),
 							""+AddApplicantPanel.getInstance().jobClassCB.getSelectedItem().toString().charAt(0), AddApplicantPanel.getInstance().lastComp_TF.getText().trim(),
 							AddApplicantPanel.getInstance().email_TF.getText().trim(), AddApplicantPanel.getInstance().source_TF.getText().trim(),
 							AddApplicantPanel.getInstance().specifics_TF.getText().trim(), AddApplicantPanel.getInstance().posEndorsedCB.getSelectedItem().toString(),
-							AddApplicantPanel.getInstance().statusCB.getSelectedItem().toString(), AddApplicantPanel.getInstance().schedDateCB.getDate(),
+							AddApplicantPanel.getInstance().statusCB.getSelectedItem().toString(), dateD.getDate(),
 							AddApplicantPanel.getInstance().schedTime_TF.getText().trim(), AddApplicantPanel.getInstance().schedOutcomeCB.getSelectedItem().toString(),
-							AddApplicantPanel.getInstance().reschedDateCB.getDate(), AddApplicantPanel.getInstance().reschedTime_TF.getText().trim(),
+							dateRD.getDate(), AddApplicantPanel.getInstance().reschedTime_TF.getText().trim(),
 							AddApplicantPanel.getInstance().reschedOutcomeCB.getSelectedItem().toString(), AddApplicantPanel.getInstance().recruiter_TF.getText().trim(),
 							AddApplicantPanel.getInstance().clientName_TF.getText().trim(), AddApplicantPanel.getInstance().clientResultCB.getSelectedItem().toString(),
 							AddApplicantPanel.getInstance().remarks_TA.getText().trim(), AddApplicantPanel.getInstance().actualRevenue_TF.getText().trim(),
 							AddApplicantPanel.getInstance().cvPath_TF.getText().trim());
-				if((!applicant.getSchedTime().equals("") && !isValidTime(applicant.getSchedTime())) || (!applicant.getReschedTime().equals("") && !isValidTime(applicant.getReschedTime())) || applicant.getFirstname().equals("") ||
-						applicant.getLastname().equals("") || applicant.getPrimaryNumber().equals("") || applicant.getSchool().equals("") || applicant.getLastCompany().equals("") || applicant.getEmail().equals("") || applicant.getSource().equals("") || applicant.getSpecifics().equals("") ||
-						(!applicant.getDateSourced().equals("Year-mm-dd") && !isDate(applicant.getDateSourced())) || (!applicant.getDateProcessed().equals("Year-mm-dd") && !isDate(applicant.getDateProcessed())) || 
-						(!applicant.getSchedDate().equals("Year-mm-dd") && !isDate(applicant.getSchedDate())) || (!applicant.getReschedDate().equals("Year-mm-dd") && !isDate(applicant.getReschedDate())))
+				String dateSourced, dateProcessed, schedDate, reschedDate;
+				dateSourced = ((JTextField)(dateS.getDateEditor().getUiComponent())).getText();
+				dateProcessed = ((JTextField)(dateP.getDateEditor().getUiComponent())).getText();
+				schedDate = ((JTextField)(dateD.getDateEditor().getUiComponent())).getText();
+				reschedDate = ((JTextField)(dateRD.getDateEditor().getUiComponent())).getText();
+				if((!applicant.getSchedTime().equals("eg. 8:30 am") && !isValidTime(applicant.getSchedTime())) || (!applicant.getReschedTime().equals("eg. 8:30 am") && !isValidTime(applicant.getReschedTime())) || AddApplicantPanel.getInstance().firstName_TF.getForeground().equals(Color.LIGHT_GRAY) ||
+						AddApplicantPanel.getInstance().lastName_TF.getForeground().equals(Color.LIGHT_GRAY) || applicant.getPrimaryNumber().equals("") || applicant.getSchool().equals("") || applicant.getLastCompany().equals("") || AddApplicantPanel.getInstance().email_TF.getForeground().equals(Color.LIGHT_GRAY) || applicant.getSource().equals("") || applicant.getSpecifics().equals("") ||
+						(!dateSourced.isEmpty() && dateS.getDate() == null) || (!dateProcessed.isEmpty() && dateP.getDate() == null) || 
+						(!schedDate.isEmpty() && dateD.getDate() == null) || (!reschedDate.isEmpty() && dateRD.getDate() == null))
 					throw new Exception();
 				else{
 					if(!applicantAlreadyExist(applicant)){
@@ -60,7 +72,7 @@ public class AddApplicantListener implements ActionListener{
 					}
 				}
 			}catch(Exception e){
-				JOptionPane.showMessageDialog(null, "Error! Check all inputs for required fields or date.", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Error! Check all inputs for required fields/date/time.", "Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 			}
 		}
@@ -106,13 +118,5 @@ public class AddApplicantListener implements ActionListener{
 		if(str.equalsIgnoreCase("am") || str.equalsIgnoreCase("pm") || str.equalsIgnoreCase("nn") || str.equalsIgnoreCase("mn"))
 			return true;
 		return false;
-	}
-	
-	private boolean isDate(String str){
-		String val[] = str.split("-");
-		
-		if(!isNum(val[0]) || !isNum(val[1]) || !isNum(val[2]))
-			return false;
-		return true;
 	}
 }

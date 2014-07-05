@@ -1,5 +1,8 @@
 package model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Applicant {
 	
 	private String date_processed, date_sourced, first_name, last_name, primary_mobile, secondary_mobile, school, last_position, job_classification, 
@@ -10,13 +13,13 @@ public class Applicant {
 			"`last_position`,`job_classification`,`last_company`,`email`,`source`,`source_specifics`,`position_endorsed`,`status`,`sched_date`,`sched_time`," +
 			"`sched_outcome`,`resched_date`,`resched_time`,`resched_outcome`,`recruiter`,`endorsed_client`,`client_result`,`remarks`,`actual_revenue`,`cv_path`)";
 	
-	public Applicant(String date_sourced, String date_processed, String first_name, String last_name, String primary_mobile, String secondary_mobile, 
+	public Applicant(Date dateSourced, Date dateProcessed, String first_name, String last_name, String primary_mobile, String secondary_mobile, 
 						String school, String last_position, String job_classification, String last_company, String email, String source, String specifics,
-						String pos_endorsed, String status, String sched_date, String sched_time, String sched_outcome, String resched_date, String resched_time, 
+						String pos_endorsed, String status, Date dateSched, String sched_time, String sched_outcome, Date reschedDate, String resched_time, 
 						String resched_outcome, String recruiter, String endorsed_client, String client_result, String remarks, String actual_revenue, String cv_path){
-	
-		this.date_sourced = date_sourced;
-		this.date_processed = date_processed;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		this.date_sourced = dateSourced == null?null:dateFormat.format(dateSourced);
+		this.date_processed = dateProcessed == null?null:dateFormat.format(dateProcessed);
 		this.first_name = first_name;
 		this.last_name = last_name;
 		this.primary_mobile = primary_mobile;
@@ -30,10 +33,10 @@ public class Applicant {
 		this.specifics = specifics;
 		this.pos_endorsed = pos_endorsed;
 		this.status = status;
-		this.sched_date = sched_date;
+		this.sched_date = dateSched == null?null:dateFormat.format(dateSched);
 		this.sched_time = sched_time;
 		this.sched_outcome = sched_outcome;
-		this.resched_date = resched_date;
+		this.resched_date = reschedDate == null?null:dateFormat.format(reschedDate);
 		this.resched_time = resched_time;
 		this.resched_outcome = resched_outcome;
 		this.recruiter = recruiter;
@@ -176,6 +179,6 @@ public class Applicant {
 	}
 	
 	public boolean isDateEmpty(String date){
-		return date.equals("Year-mm-dd") ? true : false;
+		return date == null;
 	}
 }

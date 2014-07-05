@@ -39,6 +39,11 @@ create table if not exists `JCCI_db`.`applicant_info`(
 	`cv_path` varchar(255) not null
 );
 
+create table if not exists `JCCI_db`.`occupation_list`(
+	`occupation` varchar(255) not null primary key,
+	`classification` varchar(20) not null
+);
+
 create user 'administrator'@'%' identified by 'password';
 #grant usage on JCCI_db.* to administrator@'%' identified by 'password'; 
 grant all on *.* to administrator@'%' identified by 'password';

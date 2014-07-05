@@ -122,4 +122,41 @@ public class AccessLayer {
 				connection.close();
 		} catch (Exception e) {}
 	}
+
+	public void addOccupationToDatabase(String value, String classification) throws SQLException {
+		prepareConnection();
+		try{
+			connection.setAutoCommit(false);
+			connection.createStatement().executeUpdate("insert into `occupation_list` values('"+value+"','"+classification+"')");
+			connection.commit();
+		}catch(SQLException e){
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			closeConnection();
+			throw e;
+		}
+	}
+
+	public ResultSet getAllOccupations() {
+		return executeQuery("select * from occupation_list;");
+	}
+
+	public void removeOccupationFromDatabase(String value) {
+		prepareConnection();
+		try{
+			connection.setAutoCommit(false);
+			connection.createStatement().executeUpdate("delete from `occupation_list` where occupation = '"+value+"';");
+			connection.commit();
+		}catch(SQLException e){
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			closeConnection();
+		}
+	}
 }
